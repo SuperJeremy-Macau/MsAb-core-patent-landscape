@@ -1,0 +1,15 @@
+app:
+  title: "MsAb Patent Report App"
+  layout: "wide"
+
+neo4j:
+  uri: ""
+  user: "neo4j"
+  password: ""
+  database: "neo4j"
+  max_rows: 200
+
+report:
+  default_year_min: 1987
+  default_year_max: 2026
+  evidence_limit: 50
