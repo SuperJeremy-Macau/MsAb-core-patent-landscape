@@ -1,0 +1,30 @@
+﻿# Secrets and local runtime config
+.env
+.env.*
+!.env.example
+Env.txt
+config/settings.local.yaml
+*.local.yaml
+.streamlit/secrets.toml
+
+# Python cache and test cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Streamlit and runtime logs
+*.log
+streamlit_report_lens.*.log
+
+# Generated local outputs
+outputs/
+reports/
+artifacts/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
