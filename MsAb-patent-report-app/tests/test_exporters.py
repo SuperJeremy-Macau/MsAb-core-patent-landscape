@@ -1,5 +1,6 @@
 from msab_patent_report.exporters.html import report_to_html
 from msab_patent_report.exporters.markdown import report_to_markdown
+from msab_patent_report.exporters.pdf import report_to_pdf
 from msab_patent_report.report.models import PatentLandscapeReport, ReportSection, ReportTable
 
 
@@ -33,3 +34,12 @@ def test_html_export_contains_title_table_and_provenance():
     assert "<h1>Target Patent Landscape: CD3</h1>" in html
     assert "<th>patent_count</th>" in html
     assert "Data Provenance" in html
+
+
+def test_pdf_export_returns_pdf_bytes_with_title_table_and_provenance():
+    pdf = report_to_pdf(make_report())
+
+    assert pdf.startswith(b"%PDF-")
+    assert b"Target Patent Landscape: CD3" in pdf
+    assert b"Summary" in pdf
+    assert b"database" in pdf

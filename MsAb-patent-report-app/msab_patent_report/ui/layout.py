@@ -8,6 +8,7 @@ import streamlit as st
 
 from msab_patent_report.exporters.html import report_to_html
 from msab_patent_report.exporters.markdown import report_to_markdown
+from msab_patent_report.exporters.pdf import report_to_pdf
 from msab_patent_report.report.models import PatentLandscapeReport, ReportTable
 from msab_patent_report.ui.charts import bar_chart, yearly_trend_chart
 
@@ -226,6 +227,7 @@ def render_report_controls(report: PatentLandscapeReport) -> None:
 
     markdown = report_to_markdown(report)
     html = report_to_html(report)
+    pdf = report_to_pdf(report)
     safe_name = report.input_value.replace("/", "-").replace(" ", "_")
     st.download_button(
         "Download Markdown",
@@ -239,6 +241,13 @@ def render_report_controls(report: PatentLandscapeReport) -> None:
         data=html,
         file_name=f"{report.report_type}_{safe_name}_patent_landscape.html",
         mime="text/html",
+        width="stretch",
+    )
+    st.download_button(
+        "Download PDF",
+        data=pdf,
+        file_name=f"{report.report_type}_{safe_name}_patent_landscape.pdf",
+        mime="application/pdf",
         width="stretch",
     )
 
