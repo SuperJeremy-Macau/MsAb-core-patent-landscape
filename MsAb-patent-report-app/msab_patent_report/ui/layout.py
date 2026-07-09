@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
+from msab_patent_report.branding import PROJECT_URL, SOURCE_NOTE
 from msab_patent_report.exporters.html import report_to_html
 from msab_patent_report.exporters.markdown import report_to_markdown
 from msab_patent_report.exporters.pdf import report_to_pdf
@@ -128,6 +129,18 @@ def render_app_header(snapshot: dict[str, Any], connected: bool, year_range: tup
     <div class="msab-pill">Families <strong>{escape(_format_value(family_count))}</strong></div>
     <div class="msab-pill">Years <strong>{year_min}-{year_max}</strong></div>
   </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def render_app_footer() -> None:
+    st.markdown(
+        f"""
+<div class="msab-footer">
+  <div>{escape(SOURCE_NOTE)}</div>
+  <div><a href="{escape(PROJECT_URL)}" target="_blank" rel="noopener noreferrer">{escape(PROJECT_URL)}</a></div>
 </div>
 """,
         unsafe_allow_html=True,

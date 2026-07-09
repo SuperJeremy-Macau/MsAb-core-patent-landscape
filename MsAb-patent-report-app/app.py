@@ -15,6 +15,7 @@ from msab_patent_report.db.schema import fetch_database_snapshot, fetch_suggesti
 from msab_patent_report.report.generator import generate_report
 from msab_patent_report.ui.layout import (
     render_app_header,
+    render_app_footer,
     render_empty_report_state,
     render_panel_heading,
     render_report,
@@ -192,6 +193,8 @@ def main() -> None:
                     st.write("Connection: `unavailable`")
                 st.divider()
                 render_snapshot_panel(snapshot, connected, connection_error)
+
+    render_app_footer()
 
 
 if __name__ == "__main__":

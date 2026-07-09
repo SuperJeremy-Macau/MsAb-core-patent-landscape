@@ -189,6 +189,20 @@ div[data-testid="stSegmentedControl"] button {
 div[data-testid="stAlert"] {
   border-radius: 8px;
 }
+
+.msab-footer {
+  border-top: 1px solid var(--msab-line);
+  color: var(--msab-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  margin-top: 28px;
+  padding: 16px 0 6px;
+}
+
+.msab-footer a {
+  color: var(--msab-blue);
+  text-decoration: none;
+}
 </style>
 """
 

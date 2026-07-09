@@ -4,6 +4,7 @@ from typing import Any
 import html
 import json
 
+from msab_patent_report.branding import PROJECT_URL, SOURCE_NOTE
 from msab_patent_report.report.models import PatentLandscapeReport, ReportTable
 
 
@@ -66,6 +67,8 @@ def report_to_html(report: PatentLandscapeReport) -> str:
     h2 {{ border-top: 1px solid #d8dee8; padding-top: 18px; margin-top: 24px; }}
     h3 {{ margin-bottom: 8px; }}
     .meta {{ color: #526071; margin-bottom: 24px; }}
+    .source-note {{ border: 1px solid #d8dee8; background: #f7fafc; padding: 10px 12px; margin: 12px 0 22px; color: #3e4a5a; }}
+    .source-note a {{ color: #2f6f9f; }}
     table {{ border-collapse: collapse; width: 100%; font-size: 13px; }}
     th, td {{ border: 1px solid #d8dee8; padding: 7px 8px; text-align: left; vertical-align: top; }}
     th {{ background: #f3f6fa; }}
@@ -75,9 +78,11 @@ def report_to_html(report: PatentLandscapeReport) -> str:
 <body>
   <h1>{html.escape(report.title)}</h1>
   <div class="meta">Report type: {html.escape(report.report_type)} | Input: {html.escape(report.input_value)} | Generated: {html.escape(report.generated_at)}</div>
+  <div class="source-note">{html.escape(SOURCE_NOTE)} <a href="{html.escape(PROJECT_URL)}">{html.escape(PROJECT_URL)}</a></div>
   {''.join(section_html)}
   <section><h2>Data Provenance</h2><ul>{provenance}</ul></section>
   <section><h2>Query Row Counts</h2><ul>{row_counts}</ul></section>
+  <section><h2>Report Source</h2><p>{html.escape(SOURCE_NOTE)}</p></section>
 </body>
 </html>
 """

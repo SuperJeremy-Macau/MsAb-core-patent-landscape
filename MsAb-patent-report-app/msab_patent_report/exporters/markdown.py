@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 import json
 
+from msab_patent_report.branding import SOURCE_NOTE
 from msab_patent_report.report.models import PatentLandscapeReport, ReportTable
 
 
@@ -31,6 +32,7 @@ def report_to_markdown(report: PatentLandscapeReport) -> str:
         f"- Report type: `{report.report_type}`",
         f"- Input value: `{report.input_value}`",
         f"- Generated at: `{report.generated_at}`",
+        f"- Source: {SOURCE_NOTE}",
         "",
     ]
 
@@ -47,5 +49,6 @@ def report_to_markdown(report: PatentLandscapeReport) -> str:
     lines.extend(["", "## Query Row Counts", ""])
     for key, value in report.query_row_counts.items():
         lines.append(f"- {key}: {value}")
+    lines.extend(["", "## Report Source", "", SOURCE_NOTE])
 
     return "\n".join(lines).strip() + "\n"

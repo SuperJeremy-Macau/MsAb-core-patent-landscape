@@ -75,6 +75,8 @@ def test_markdown_export_contains_title_table_and_provenance():
     assert "# Target Patent Landscape: CD3" in text
     assert "| patent_count | family_count |" in text
     assert "Data Provenance" in text
+    assert "https://msab-patent-landscape.onrender.com" in text
+    assert "Haomai" in text
 
 
 def test_html_export_contains_title_table_and_provenance():
@@ -82,6 +84,8 @@ def test_html_export_contains_title_table_and_provenance():
     assert "<h1>Target Patent Landscape: CD3</h1>" in html
     assert "<th>patent_count</th>" in html
     assert "Data Provenance" in html
+    assert "https://msab-patent-landscape.onrender.com" in html
+    assert "Haomai" in html
 
 
 def test_pdf_export_returns_pdf_bytes_with_title_table_and_provenance():
@@ -91,6 +95,8 @@ def test_pdf_export_returns_pdf_bytes_with_title_table_and_provenance():
     assert b"Target Patent Landscape: CD3" in pdf
     assert b"Summary" in pdf
     assert b"database" in pdf
+    assert b"https://msab-patent-landscape.onrender.com" in pdf
+    assert b"Haomai" in pdf
 
 
 def test_pdf_export_embeds_summary_charts_and_evidence_tables():

@@ -13,6 +13,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Image, KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
+from msab_patent_report.branding import PDF_WATERMARK_TEXT, SOURCE_NOTE
 from msab_patent_report.report.models import PatentLandscapeReport, ReportTable
 
 
@@ -271,6 +272,24 @@ def _key_value_table(title: str, items: dict[str, Any], styles: dict[str, Paragr
     return [_paragraph(title, styles["h2"]), table, Spacer(1, 8)]
 
 
+def _draw_watermark(canvas: Any, doc: SimpleDocTemplate) -> None:
+    canvas.saveState()
+    canvas.setFillColor(colors.HexColor("#d8dee8"))
+    if hasattr(canvas, "setFillAlpha"):
+        canvas.setFillAlpha(0.22)
+    canvas.setFont("Helvetica-Bold", 20)
+    canvas.translate(letter[0] / 2, letter[1] / 2)
+    canvas.rotate(35)
+    canvas.drawCentredString(0, 0, _pdf_safe(PDF_WATERMARK_TEXT))
+    canvas.restoreState()
+
+    canvas.saveState()
+    canvas.setFillColor(colors.HexColor("#7b8794"))
+    canvas.setFont("Helvetica", 7.5)
+    canvas.drawCentredString(letter[0] / 2, 0.24 * inch, _pdf_safe(PDF_WATERMARK_TEXT))
+    canvas.restoreState()
+
+
 def report_to_pdf(report: PatentLandscapeReport) -> bytes:
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -290,6 +309,7 @@ def report_to_pdf(report: PatentLandscapeReport) -> bytes:
             f"Report type: {report.report_type} | Input: {report.input_value} | Generated: {report.generated_at}",
             styles["meta"],
         ),
+        _paragraph(SOURCE_NOTE, styles["meta"]),
     ]
 
     metrics = _metric_table(report, styles, doc.width)
@@ -311,5 +331,5 @@ def report_to_pdf(report: PatentLandscapeReport) -> bytes:
     story.extend(_key_value_table("Data Provenance", report.provenance, styles, doc.width))
     story.extend(_key_value_table("Query Row Counts", report.query_row_counts, styles, doc.width))
 
-    doc.build(story)
+    doc.build(story, onFirstPage=_draw_watermark, onLaterPages=_draw_watermark)
     return buffer.getvalue()
