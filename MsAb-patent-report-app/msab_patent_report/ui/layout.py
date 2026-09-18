@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 
 from msab_patent_report.branding import PROJECT_URL, SOURCE_NOTE
+from msab_patent_report.data_scope import PATENT_DATA_CUTOFF_NOTE
 from msab_patent_report.exporters.html import report_to_html
 from msab_patent_report.exporters.markdown import report_to_markdown
 from msab_patent_report.exporters.pdf import report_to_pdf
@@ -133,6 +134,7 @@ def render_app_header(snapshot: dict[str, Any], connected: bool, year_range: tup
 """,
         unsafe_allow_html=True,
     )
+    st.caption(PATENT_DATA_CUTOFF_NOTE)
 
 
 def render_app_footer() -> None:
@@ -186,6 +188,7 @@ def _render_table(table: ReportTable) -> None:
 
 def render_report(report: PatentLandscapeReport) -> None:
     st.markdown(f"### {report.title}")
+    st.caption(PATENT_DATA_CUTOFF_NOTE)
     st.caption(f"Generated at {report.generated_at}. All factual content is assembled from fixed Neo4j query templates.")
     metrics = summary_metric_items(report.query_results.get("summary", []))
     if metrics:
