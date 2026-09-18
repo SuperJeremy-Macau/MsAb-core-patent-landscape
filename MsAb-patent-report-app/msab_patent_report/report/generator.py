@@ -10,6 +10,7 @@ from msab_patent_report.queries.pathway import pathway_queries
 from msab_patent_report.queries.target import target_queries
 from msab_patent_report.queries.target_pair import target_pair_queries
 from msab_patent_report.queries.technology_class import technology_class_queries
+from msab_patent_report.target_pairs import validate_current_target_pair
 
 from .assembler import assemble_report
 from .models import PatentLandscapeReport
@@ -41,6 +42,8 @@ def generate_report(
     year_max: int,
     provenance: dict[str, Any] | None = None,
 ) -> PatentLandscapeReport:
+    if report_type == "TargetPair":
+        validate_current_target_pair(runner, value)
     results: dict[str, list[dict[str, Any]]] = {}
     for query in report_queries(report_type):
         params = {

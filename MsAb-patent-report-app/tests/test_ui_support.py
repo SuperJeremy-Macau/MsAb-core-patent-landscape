@@ -120,6 +120,7 @@ def test_report_queries_rejects_unknown_type():
 def test_generate_report_uses_runner_rows():
     runner = FakeRunner(
         {
+            "RETURN count(tp) AS count": [{"count": 1}],
             "count(DISTINCT p) AS patent_count": [
                 {"patent_count": 10, "family_count": 3, "first_year": 2018, "latest_year": 2026}
             ],

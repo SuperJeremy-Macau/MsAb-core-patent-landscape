@@ -13,6 +13,11 @@ from config.settings_loader import load_settings
 from msab_patent_report.db.neo4j_runner import Neo4jRunner
 from msab_patent_report.db.schema import fetch_database_snapshot, fetch_suggestions, fetch_year_range
 from msab_patent_report.report.generator import generate_report
+from msab_patent_report.target_pairs import (
+    fetch_target_pairs,
+    search_target_pairs,
+    validate_target_pair_selection,
+)
 from msab_patent_report.ui.layout import (
     render_app_header,
     render_app_footer,
@@ -60,6 +65,49 @@ def cached_suggestions(report_type: str) -> list[str]:
 @st.cache_data(show_spinner=False, ttl=600)
 def cached_snapshot() -> dict:
     return fetch_database_snapshot(get_runner())
+
+
+@st.cache_data(show_spinner=False, ttl=600)
+def cached_target_pairs():
+    return fetch_target_pairs(get_runner())
+
+
+def target_pair_input(connected: bool) -> tuple[str | None, list[str]]:
+    if st.button("Refresh combinations", disabled=not connected):
+        cached_target_pairs.clear()
+        st.session_state.pop("target_pair_selection", None)
+    options = []
+    try:
+        if connected:
+            options = cached_target_pairs()
+    except Exception:
+        st.error("Combinations could not be loaded. Refresh combinations to try again.")
+    query = st.text_input(
+        "Search by target(s) or combination name",
+        key="target_pair_search",
+        help="Enter one target or separate multiple targets with spaces.",
+        max_chars=300,
+    )
+    candidates = search_target_pairs(options, query)
+    if st.session_state.get("target_pair_selection") not in candidates:
+        st.session_state["target_pair_selection"] = None
+    selected = st.selectbox(
+        "Select a matching combination",
+        candidates,
+        index=None,
+        key="target_pair_selection",
+        accept_new_options=False,
+        disabled=not candidates,
+        placeholder="Choose an existing combination",
+    )
+    st.caption(f"{len(candidates):,} matching / {len(options):,} available combinations")
+    if not candidates and options:
+        st.info("No matching combinations. Try a standard target name or fewer targets.")
+    elif not options and connected:
+        st.warning("No combinations are available. Refresh combinations to try again.")
+    if not selected:
+        st.caption("Select an existing combination before generating a report.")
+    return selected, candidates
 
 
 def _brief_error(exc: Exception) -> str:
@@ -111,14 +159,17 @@ def main() -> None:
 
             suggestions = []
             suggestion_error = None
-            if connected:
+            if connected and report_type != "TargetPair":
                 try:
                     suggestions = cached_suggestions(report_type)
                 except Exception as exc:
                     suggestion_error = _brief_error(exc)
 
             preferred = DEFAULT_VALUES[report_type]
-            if suggestions:
+            candidates = []
+            if report_type == "TargetPair":
+                selected, candidates = target_pair_input(connected)
+            elif suggestions:
                 index = suggestions.index(preferred) if preferred in suggestions else 0
                 selected = st.selectbox(
                     "Report input value",
@@ -140,8 +191,11 @@ def main() -> None:
                     with st.expander("Suggestion detail"):
                         st.code(suggestion_error)
 
-            value = str(selected or preferred)
-            generate = st.button("Generate Report", type="primary", width="stretch", disabled=not connected)
+            value = str(selected or "") if report_type == "TargetPair" else str(selected or preferred)
+            generate = st.button(
+                "Generate Report", type="primary", width="stretch",
+                disabled=not connected or (report_type == "TargetPair" and selected not in candidates),
+            )
 
             with st.expander("Year filter", expanded=False):
                 selected_years = st.slider(
@@ -154,11 +208,13 @@ def main() -> None:
     if generate:
         with st.spinner("Running fixed Neo4j query bundle and assembling report..."):
             try:
+                if report_type == "TargetPair":
+                    validate_target_pair_selection(value, candidates)
                 cfg = load_settings(SETTINGS_PATH)
                 report = generate_report(
                     runner=get_runner(),
                     report_type=report_type,
-                    value=value.strip(),
+                    value=value if report_type == "TargetPair" else value.strip(),
                     year_min=selected_years[0],
                     year_max=selected_years[1],
                     provenance={

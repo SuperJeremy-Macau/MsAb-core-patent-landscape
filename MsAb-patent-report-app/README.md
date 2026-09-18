@@ -15,6 +15,29 @@ Curated knowledge lenses start from manually curated biological or technical lay
 & 'E:\anconda\Scripts\conda.exe' run -n bsab-scidata streamlit run MsAb-patent-report-app\app.py
 ```
 
+## Target Pair search
+
+Choose `Target Pair`, enter one or more targets, select a matching database
+combination, then click `Generate Report`. Multiple targets use AND matching;
+order and case do not matter. Exact standard names rank first, and target
+membership comes from `HAS_TARGET` relationships, including multi-target pairs.
+Complete compound target symbols are preserved; slash-separated input is parsed
+only through known symbols. Partial names can narrow candidates but never become
+report inputs.
+
+The catalogue loads every distinct nonblank `TargetPair.name`, without additional
+exclusions or the report query row limit. It is cached for ten minutes; `Refresh
+combinations` reloads it and clears the selection. Failed loads and unmatched
+searches cannot submit. The report generator checks the chosen name against the
+live database before running the unchanged report query bundle.
+
+Validation on 2026-09-18: 948 loaded names matched the database count; `CD3`
+matched 179 combinations (43 with more than two targets); all tested BCMA/CD3
+input orders matched the same five candidates. Position 701 (`IL2RB/IL2RG`) and
+`4-1BB/5T4` were searchable. The BCMA/CD3 report for 1987–2026 was identical to
+the pre-change report except its generation timestamp (664 patents, 31 families).
+These counts describe that database snapshot and are not application limits.
+
 ## Configuration
 
 Use environment variables or an ignored local config file. Do not commit real credentials.
